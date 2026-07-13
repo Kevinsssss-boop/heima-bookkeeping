@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>K记</title>
+    <meta name="description" content="简洁的个人记账应用" />
+    <meta name="theme-color" content="#1677ff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="K记" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json" />
+    <style>
+      /* 防止页面加载时出现白屏闪烁 */
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <!-- React 加载前的占位内容，如果长时间看到此内容说明 JS 加载失败 -->
+      <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#999;font-size:16px;">
+        ⏳ 加载中...
+      </div>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+    <!-- 注册 Service Worker（PWA 离线支持） -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      }
+    </script>
+  </body>
+</html>

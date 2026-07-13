@@ -1,0 +1,85 @@
+{
+  "name": "k-note",
+  "version": "1.0.0",
+  "description": "K记 - 个人记账应用",
+  "main": "main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "electron": "node scripts/dev-electron.cjs",
+    "build": "vite build",
+    "build:win": "node scripts/make-portable.cjs",
+    "build:installer": "node scripts/build-electron.cjs",
+    "preview": "vite preview"
+  },
+  "author": "Kevin",
+  "license": "MIT",
+  "dependencies": {
+    "@ant-design/icons": "^5.4.0",
+    "antd": "^5.20.0",
+    "dayjs": "^1.11.12",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^3.9.2"
+  },
+  "devDependencies": {
+    "@electron-toolkit/preload": "^3.0.2",
+    "@vitejs/plugin-react": "^4.3.1",
+    "electron": "^31.7.7",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "rcedit": "^5.0.2",
+    "sharp": "^0.35.3",
+    "vite": "^5.3.5"
+  },
+  "build": {
+    "appId": "com.kevin.knote",
+    "productName": "K记",
+    "copyright": "Copyright © 2026",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "main.cjs",
+      "preload.cjs",
+      "package.json"
+    ],
+    "extraResources": [],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon-512.png"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "public/icon-512.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "K记",
+      "installerIcon": "public/icon-512.png",
+      "uninstallerIcon": "public/icon-512.png",
+      "installerHeaderIcon": "public/icon-512.png"
+    },
+    "portable": {
+      "artifactName": "K记.exe"
+    }
+  }
+}
