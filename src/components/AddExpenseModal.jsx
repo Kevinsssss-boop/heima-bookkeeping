@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Modal, InputNumber, DatePicker, Input } from 'antd';
 import dayjs from 'dayjs';
-import categories, { getSubCategories } from '../data/categories';
+import { mergeCategories, getSubCategories } from '../data/categories';
 
 /**
  * 记一笔 / 编辑记录 弹窗
  * 可视化分类选择器 + 金额输入 + 日期 + 备注
  */
-function AddExpenseModal({ open, editingRecord, onSave, onCancel }) {
+function AddExpenseModal({ open, editingRecord, onSave, onCancel, customData }) {
   const [amount, setAmount] = useState(null);
   const [category1, setCategory1] = useState(null);
   const [category2, setCategory2] = useState(null);
@@ -16,6 +16,9 @@ function AddExpenseModal({ open, editingRecord, onSave, onCancel }) {
   const [saving, setSaving] = useState(false);
 
   const isEdit = !!editingRecord;
+
+  // 合并预置分类 + 自定义分类
+  const categories = useMemo(() => mergeCategories(customData), [customData]);
 
   // 弹窗打开时初始化
   useEffect(() => {
@@ -112,7 +115,7 @@ function AddExpenseModal({ open, editingRecord, onSave, onCancel }) {
         <div style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 13, color: '#999', marginBottom: 8 }}>具体分类</div>
           <div className="subcategory-grid">
-            {getSubCategories(category1).map((sub) => (
+            {getSubCategories(category1, categories).map((sub) => (
               <div
                 key={sub.value}
                 className={`subcategory-item ${category2 === sub.value ? 'selected' : ''}`}

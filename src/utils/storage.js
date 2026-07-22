@@ -7,6 +7,7 @@
 
 const STORAGE_KEY = 'heima-jizhang-expenses';
 const SETTINGS_KEY = 'heima-jizhang-settings';
+const CUSTOM_CAT_KEY = 'heima-jizhang-custom-categories';
 
 /** 检测是否在 Electron 环境中 */
 function isElectron() {
@@ -104,4 +105,53 @@ export function saveSettings(settings) {
   } catch {
     return false;
   }
+}
+
+// ========== 自定义分类 ==========
+
+function getDefaultCustomData() {
+  return { customCategories: [], customSubCategories: {} };
+}
+
+function webGetCustomCategories() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_CAT_KEY);
+    const data = raw ? JSON.parse(raw) : getDefaultCustomData();
+    if (!data.customCategories) data.customCategories = [];
+    if (!data.customSubCategories) data.customSubCategories = {};
+    return data;
+  } catch {
+    return getDefaultCustomData();
+  }
+}
+
+function webSaveCustomCategories(data) {
+  try {
+    localStorage.setItem(CUSTOM_CAT_KEY, JSON.stringify(data));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** 读取自定义分类数据 */
+export async function getCustomCategoriesData() {
+  if (isElectron()) {
+    try {
+      return await window.electronAPI.getCustomCategories();
+    } catch (err) {
+      console.error('Electron IPC 读取自定义分类失败，使用 localStorage 兜底：', err);
+      return webGetCustomCategories();
+    }
+  }
+  return webGetCustomCategories();
+}
+
+/** 保存自定义分类数据 */
+export function saveCustomCategoriesData(data) {
+  if (isElectron()) {
+    window.electronAPI.saveCustomCategories(data);
+    return true;
+  }
+  return webSaveCustomCategories(data);
 }

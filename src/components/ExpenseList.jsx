@@ -4,7 +4,7 @@ import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { getCategoryIcon } from '../data/categories';
 import dayjs from 'dayjs';
 
-function ExpenseList({ expenses, loading, onEdit, onDelete }) {
+function ExpenseList({ expenses, loading, onEdit, onDelete, customData }) {
   const [filterCategory, setFilterCategory] = useState(null);
   const [filterMonth, setFilterMonth] = useState(null);
 
@@ -21,7 +21,7 @@ function ExpenseList({ expenses, loading, onEdit, onDelete }) {
 
   const catOptions = [...new Set(expenses.map((e) => e.category1))].map((c) => ({
     value: c,
-    label: `${getCategoryIcon(c)} ${c}`,
+    label: `${getCategoryIcon(c, customData?.customCategories)} ${c}`,
   }));
 
   if (loading) {
@@ -74,7 +74,7 @@ function ExpenseList({ expenses, loading, onEdit, onDelete }) {
             <span>子分类</span>
             <span>日期</span>
             <span>备注</span>
-            <span style={{ textAlign: 'right' }}>金额</span>
+            <span style={{ textAlign: 'left', display: 'block' }}>金额</span>
           </div>
           {filtered.map((item) => (
             <div
@@ -90,17 +90,15 @@ function ExpenseList({ expenses, loading, onEdit, onDelete }) {
                     color: getFg(item.category1),
                   }}
                 >
-                  {getCategoryIcon(item.category1)}
+                  {getCategoryIcon(item.category1, customData?.customCategories)}
                 </span>
                 {item.category1}
               </div>
               <div className="col-sub">{item.category2}</div>
               <div className="col-date">{item.date}</div>
               <div className="col-note">{item.note || '-'}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span className="col-amount" style={{ flex: 1 }}>
-                  -¥{item.amount.toFixed(2)}
-                </span>
+              <div className="col-amount">
+                <span className="col-amount-text">-¥{item.amount.toFixed(2)}</span>
                 <Popconfirm
                   title="确定删除？"
                   onConfirm={(e) => {

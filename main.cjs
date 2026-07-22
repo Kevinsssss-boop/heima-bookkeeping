@@ -4,6 +4,7 @@ const fs = require('fs');
 
 const isDev = !app.isPackaged;
 const dataFile = path.join(app.getPath('userData'), 'expenses.json');
+const customCatFile = path.join(app.getPath('userData'), 'custom-categories.json');
 
 // ====== 数据读写 ======
 
@@ -55,6 +56,39 @@ ipcMain.handle('update-expense', (_event, updated) => {
 ipcMain.handle('delete-expense', (_event, id) => {
   const expenses = readExpenses();
   writeExpenses(expenses.filter((e) => e.id !== id));
+  return { success: true };
+});
+
+// ====== 自定义分类 IPC ======
+
+function readCustomCategories() {
+  try {
+    if (!fs.existsSync(customCatFile)) {
+      const def = { customCategories: [], customSubCategories: {} };
+      fs.writeFileSync(customCatFile, JSON.stringify(def, null, 2), 'utf-8');
+      return def;
+    }
+    return JSON.parse(fs.readFileSync(customCatFile, 'utf-8'));
+  } catch (err) {
+    console.error('读取自定义分类失败：', err);
+    return { customCategories: [], customSubCategories: {} };
+  }
+}
+
+function writeCustomCategories(data) {
+  try {
+    fs.writeFileSync(customCatFile, JSON.stringify(data, null, 2), 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('写入自定义分类失败：', err);
+    return false;
+  }
+}
+
+ipcMain.handle('get-custom-categories', () => readCustomCategories());
+
+ipcMain.handle('save-custom-categories', (_event, data) => {
+  writeCustomCategories(data);
   return { success: true };
 });
 

@@ -5,7 +5,8 @@ import Dashboard from './components/Dashboard';
 import ExpenseList from './components/ExpenseList';
 import AddExpenseModal from './components/AddExpenseModal';
 import StatsView from './components/StatsView';
-import { getExpenses, addExpense, updateExpense, deleteExpense, getSettings, saveSettings } from './utils/storage';
+import CategoryManager from './components/CategoryManager';
+import { getExpenses, addExpense, updateExpense, deleteExpense, getSettings, saveSettings, getCustomCategoriesData, saveCustomCategoriesData } from './utils/storage';
 import { generateId } from './utils/helpers';
 import './App.css';
 
@@ -16,6 +17,7 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
   const [settings, setSettings] = useState({ monthlyBudget: 0 });
+  const [customData, setCustomData] = useState({ customCategories: [], customSubCategories: {} });
   const [budgetModalOpen, setBudgetModalOpen] = useState(false);
   const [budgetInput, setBudgetInput] = useState(0);
 
@@ -23,13 +25,15 @@ function App() {
 
   const loadData = async () => {
     try {
-      const [expData, sett] = await Promise.all([
+      const [expData, sett, custData] = await Promise.all([
         getExpenses(),
         Promise.resolve(getSettings()),
+        getCustomCategoriesData(),
       ]);
       expData.sort((a, b) => new Date(b.date) - new Date(a.date));
       setExpenses(expData);
       setSettings(sett);
+      setCustomData(custData);
     } catch (err) {
       console.error('加载数据失败：', err);
     } finally {
@@ -71,6 +75,11 @@ function App() {
     message.success('预算已更新');
   };
 
+  const handleSaveCustomData = (data) => {
+    setCustomData(data);
+    saveCustomCategoriesData(data);
+  };
+
   const renderContent = () => {
     switch (activeView) {
       case 'dashboard':
@@ -87,6 +96,7 @@ function App() {
             loading={loading}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            customData={customData}
           />
         );
       case 'stats':
@@ -94,6 +104,13 @@ function App() {
           <StatsView
             expenses={expenses}
             monthlyBudget={settings.monthlyBudget}
+          />
+        );
+      case 'categories':
+        return (
+          <CategoryManager
+            customData={customData}
+            onSave={handleSaveCustomData}
           />
         );
       default:
@@ -122,6 +139,7 @@ function App() {
             {activeView === 'dashboard' && '📊 收支总览'}
             {activeView === 'expenses' && '📋 账单明细'}
             {activeView === 'stats' && '📈 统计分析'}
+            {activeView === 'categories' && '📂 分类管理'}
           </h2>
           <div className="header-actions">
             <button className="header-budget-btn" onClick={() => {
@@ -143,6 +161,7 @@ function App() {
         editingRecord={editingRecord}
         onSave={handleSave}
         onCancel={() => { setModalOpen(false); setEditingRecord(null); }}
+        customData={customData}
       />
 
       {/* 预算设置弹窗 */}

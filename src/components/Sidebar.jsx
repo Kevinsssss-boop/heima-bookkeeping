@@ -3,13 +3,14 @@ import {
   PlusCircleOutlined,
   UnorderedListOutlined,
   PieChartOutlined,
-  SettingOutlined,
+  AppstoreOutlined,
 } from '@ant-design/icons';
 
 const navItems = [
   { key: 'dashboard', label: '总览', icon: <DashboardOutlined /> },
   { key: 'expenses', label: '账单', icon: <UnorderedListOutlined /> },
   { key: 'stats', label: '统计', icon: <PieChartOutlined /> },
+  { key: 'categories', label: '分类', icon: <AppstoreOutlined /> },
 ];
 
 function Sidebar({ activeView, onNavigate, onAdd, monthlyBudget, expenses }) {
