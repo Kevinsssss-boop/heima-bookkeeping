@@ -6,6 +6,7 @@ import ExpenseList from './components/ExpenseList';
 import AddExpenseModal from './components/AddExpenseModal';
 import StatsView from './components/StatsView';
 import CategoryManager from './components/CategoryManager';
+import SnakeGame from './components/SnakeGame';
 import { getExpenses, addExpense, updateExpense, deleteExpense, getSettings, saveSettings, getCustomCategoriesData, saveCustomCategoriesData } from './utils/storage';
 import { generateId } from './utils/helpers';
 import './App.css';
@@ -113,6 +114,8 @@ function App() {
             onSave={handleSaveCustomData}
           />
         );
+      case 'snake':
+        return <SnakeGame key="snake" />; // 修复 #9：加 key 防止 React 复用旧实例
       default:
         return null;
     }
@@ -140,6 +143,7 @@ function App() {
             {activeView === 'expenses' && '📋 账单明细'}
             {activeView === 'stats' && '📈 统计分析'}
             {activeView === 'categories' && '📂 分类管理'}
+            {activeView === 'snake' && '🐍 贪吃蛇'}
           </h2>
           <div className="header-actions">
             <button className="header-budget-btn" onClick={() => {

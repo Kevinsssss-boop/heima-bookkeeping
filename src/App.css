@@ -1076,3 +1076,163 @@ body {
   .dash-cards { grid-template-columns: repeat(2, 1fr); }
   .dash-charts { grid-template-columns: 1fr; }
 }
+
+/* ========== 贪吃蛇游戏 ========== */
+.snake-game-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px;
+  gap: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.snake-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 440px;
+}
+
+.snake-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.snake-scores {
+  display: flex;
+  gap: 20px;
+}
+
+.snake-score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.snake-score-label {
+  font-size: 11px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.snake-score-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: #4ade80;
+}
+
+.snake-score-high {
+  color: #f59e0b;
+}
+
+.snake-canvas-wrap {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 2px rgba(74, 222, 128, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.snake-canvas {
+  display: block;
+  border-radius: 12px;
+}
+
+.snake-controls {
+  display: flex;
+  gap: 12px;
+}
+
+.snake-btn {
+  padding: 10px 28px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.snake-btn-start {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+}
+.snake-btn-start:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45);
+}
+
+.snake-btn-pause {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+}
+.snake-btn-pause:hover {
+  transform: translateY(-1px);
+}
+
+.snake-btn-resume {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+}
+.snake-btn-resume:hover {
+  transform: translateY(-1px);
+}
+
+/* 方向键（移动端） */
+.snake-dpad {
+  display: grid;
+  grid-template-areas:
+    '. up .'
+    'left center right'
+    '. down .';
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(3, 56px);
+  gap: 4px;
+}
+
+.snake-dpad-up    { grid-area: up; }
+.snake-dpad-down  { grid-area: down; }
+.snake-dpad-left  { grid-area: left; }
+.snake-dpad-right { grid-area: right; }
+.snake-dpad-center{ grid-area: center; }
+
+.snake-dpad-btn {
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  background: #e8ecf1;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.snake-dpad-btn:active {
+  background: #c8d0dc;
+  transform: scale(0.95);
+}
+.snake-dpad-center {
+  background: transparent;
+  cursor: default;
+  font-size: 8px;
+  color: #ccc;
+}
+
+.snake-tips {
+  text-align: center;
+  color: #aaa;
+  font-size: 12px;
+  line-height: 1.8;
+}

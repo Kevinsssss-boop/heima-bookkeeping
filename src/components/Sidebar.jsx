@@ -4,6 +4,7 @@ import {
   UnorderedListOutlined,
   PieChartOutlined,
   AppstoreOutlined,
+  ExperimentOutlined,
 } from '@ant-design/icons';
 
 const navItems = [
@@ -11,6 +12,7 @@ const navItems = [
   { key: 'expenses', label: '账单', icon: <UnorderedListOutlined /> },
   { key: 'stats', label: '统计', icon: <PieChartOutlined /> },
   { key: 'categories', label: '分类', icon: <AppstoreOutlined /> },
+  { key: 'snake', label: '贪吃蛇', icon: <ExperimentOutlined /> },
 ];
 
 function Sidebar({ activeView, onNavigate, onAdd, monthlyBudget, expenses }) {
