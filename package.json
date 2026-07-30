@@ -9,7 +9,10 @@
     "build": "vite build",
     "build:win": "node scripts/make-portable.cjs",
     "build:installer": "node scripts/build-electron.cjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
   },
   "author": "Kevin",
   "license": "MIT",
@@ -23,13 +26,20 @@
   },
   "devDependencies": {
     "@electron-toolkit/preload": "^3.0.2",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/coverage-v8": "^4.1.10",
     "electron": "^31.7.7",
     "electron-builder": "^26.15.3",
     "electron-vite": "^5.0.0",
+    "happy-dom": "^20.11.1",
+    "jsdom": "^30.0.1",
     "rcedit": "^5.0.2",
     "sharp": "^0.35.3",
-    "vite": "^5.3.5"
+    "vite": "^5.3.5",
+    "vitest": "^4.1.10"
   },
   "build": {
     "appId": "com.kevin.knote",

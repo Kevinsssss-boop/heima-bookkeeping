@@ -1,35 +1,61 @@
+/**
+ * 记一笔 / 编辑记录 弹窗组件
+ *
+ * 功能：
+ *   1. 新增支出记录：选择金额 → 选分类（一级+二级）→ 选日期 → 填备注 → 保存
+ *   2. 编辑已有记录：自动回填所有字段，保存后更新原记录
+ *
+ * 交互细节：
+ *   - 选择一级分类后，才显示对应的二级子分类（联动）
+ *   - 切换一级分类时，自动清空已选的二级分类（避免数据不一致）
+ *   - 日期默认为今天，不允许选未来日期
+ *   - 金额必须 > 0，且必须选完一级和二级分类才能保存
+ */
 import { useState, useEffect, useMemo } from 'react';
-import { Modal, InputNumber, DatePicker, Input } from 'antd';
+import { Modal, InputNumber, DatePicker, Input, message } from 'antd';
 import dayjs from 'dayjs';
 import { mergeCategories, getSubCategories } from '../data/categories';
 
-/**
- * 记一笔 / 编辑记录 弹窗
- * 可视化分类选择器 + 金额输入 + 日期 + 备注
- */
 function AddExpenseModal({ open, editingRecord, onSave, onCancel, customData }) {
+  // ====== 表单状态 ======
+
+  /** 用户输入的金额（单位：元） */
   const [amount, setAmount] = useState(null);
+  /** 用户选择的一级分类（如：餐饮、交通、购物） */
   const [category1, setCategory1] = useState(null);
+  /** 用户选择的二级分类（如：早餐、午餐、晚餐） */
   const [category2, setCategory2] = useState(null);
+  /** 选择的日期，默认今天 */
   const [date, setDate] = useState(dayjs());
+  /** 备注内容（可选，最多100字） */
   const [note, setNote] = useState('');
+  /** 是否正在保存中（防止重复点击） */
   const [saving, setSaving] = useState(false);
 
+  /** 当前是否为编辑模式（true=编辑，false=新增） */
   const isEdit = !!editingRecord;
 
-  // 合并预置分类 + 自定义分类
+  // 合并预置分类 + 自定义分类，供选择器使用
   const categories = useMemo(() => mergeCategories(customData), [customData]);
 
-  // 弹窗打开时初始化
+  // ====== 弹窗打开/关闭时的初始化/清理 ======
+
+  /**
+   * 弹窗打开时根据模式初始化表单：
+   *   - 编辑模式：从 editingRecord 回填所有字段
+   *   - 新增模式：全部重置为空/默认值
+   */
   useEffect(() => {
     if (open) {
       if (editingRecord) {
+        // 编辑模式：回填已有数据
         setAmount(editingRecord.amount);
         setCategory1(editingRecord.category1);
         setCategory2(editingRecord.category2);
         setDate(dayjs(editingRecord.date));
         setNote(editingRecord.note || '');
       } else {
+        // 新增模式：重置为空
         setAmount(null);
         setCategory1(null);
         setCategory2(null);
@@ -39,26 +65,56 @@ function AddExpenseModal({ open, editingRecord, onSave, onCancel, customData }) 
     }
   }, [open, editingRecord]);
 
-  // 切换一级分类时清空二级
+  /**
+   * 切换一级分类时，清空二级分类的选择
+   * （因为不同一级分类下的二级选项完全不同，避免选错）
+   */
   const handleCategory1Change = (val) => {
     setCategory1(val);
-    setCategory2(null);
+    setCategory2(null);  // 二级分类要重新选
   };
 
+  /**
+   * 点击保存按钮时的校验和提交逻辑
+   * 校验规则：
+   *   1. 金额必须填写且大于 0
+   *   2. 必须选择一级分类
+   *   3. 必须选择二级分类
+   * 不满足条件时会静默拦截（不弹窗），不会报错
+   */
   const handleSave = async () => {
-    if (!amount || amount <= 0) return;
-    if (!category1) return;
-    if (!category2) return;
+    // 校验1：金额检查
+    if (!amount || amount <= 0) {
+      message.warning('⚠️ 请输入有效的金额（必须大于 0）');
+      return;
+    }
+    // 校验2：一级分类检查
+    if (!category1) {
+      message.warning('⚠️ 请先选择一个分类（如：🍜 餐饮、🚗 交通）');
+      return;
+    }
+    // 校验3：二级分类检查
+    if (!category2) {
+      message.warning(`⚠️ 请选择「${category1}」下的具体分类`);
+      return;
+    }
 
+    // 校验通过，开始保存
     setSaving(true);
-    await onSave({
-      amount,
-      category1,
-      category2,
-      date: date.format('YYYY-MM-DD'),
-      note,
-    });
-    setSaving(false);
+    try {
+      await onSave({
+        amount,
+        category1,
+        category2,
+        date: date.format('YYYY-MM-DD'),
+        note,
+      });
+    } catch (err) {
+      console.error('保存失败：', err);
+      message.error('❌ 保存失败，请重试');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -76,7 +132,7 @@ function AddExpenseModal({ open, editingRecord, onSave, onCancel, customData }) 
       width={420}
       styles={{ body: { padding: '16px 20px 24px' } }}
     >
-      {/* ===== 金额输入 ===== */}
+      {/* ===== 金额输入区 ===== */}
       <div className="amount-label">金额</div>
       <div className={`amount-display ${amount ? 'has-value' : ''}`}>
         {amount ? `¥${amount.toFixed(2)}` : '¥0.00'}
@@ -93,9 +149,10 @@ function AddExpenseModal({ open, editingRecord, onSave, onCancel, customData }) 
         autoFocus
       />
 
-      {/* ===== 一级分类选择 ===== */}
+      {/* ===== 分类选择区（两级联动）===== */}
       <div style={{ marginBottom: 12 }}>
         <div style={{ fontSize: 13, color: '#999', marginBottom: 8 }}>选择分类</div>
+        {/* 一级分类网格：点击选择大类 */}
         <div className="category-grid">
           {categories.map((cat) => (
             <div
@@ -110,7 +167,7 @@ function AddExpenseModal({ open, editingRecord, onSave, onCancel, customData }) 
         </div>
       </div>
 
-      {/* ===== 二级分类选择 ===== */}
+      {/* 二级分类网格：选择一级后才显示对应的子类 */}
       {category1 && (
         <div style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 13, color: '#999', marginBottom: 8 }}>具体分类</div>
@@ -137,12 +194,12 @@ function AddExpenseModal({ open, editingRecord, onSave, onCancel, customData }) 
           size="large"
           format="YYYY-MM-DD"
           allowClear={false}
-          maxDate={dayjs()}
+          maxDate={dayjs()}  // 不允许选未来日期
           placeholder="选择日期"
         />
         <Input
           style={{ flex: 1.5 }}
-          placeholder="备注（可选）"
+          placeholder="备注（可选，最多100字）"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           maxLength={100}

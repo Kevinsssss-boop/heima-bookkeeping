@@ -7,7 +7,28 @@
       "Bash(cat)",
       "Bash(npm install *)",
       "Bash(taskkill /F /IM electron.exe)",
-      "Bash(rm -rf node_modules/electron)"
+      "Bash(rm -rf node_modules/electron)",
+      "Bash(powershell *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(git *)",
+      "Bash(npx vitest *)",
+      "Bash(npm audit *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File scripts/check-gate.ps1",
+            "if": "Bash(git commit:*)",
+            "timeout": 30
+          }
+        ]
+      }
     ]
   }
 }
