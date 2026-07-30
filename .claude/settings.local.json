@@ -28,6 +28,17 @@
             "timeout": 30
           }
         ]
+      },
+      {
+        "matcher": "PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File scripts/check-gate.ps1",
+            "if": "PowerShell(git commit:*)",
+            "timeout": 30
+          }
+        ]
       }
     ]
   }
