@@ -3,6 +3,12 @@
 # 检查 .claude/check-results/ 下的标记文件是否通过
 # 退出码 0 = 通过，非 0 = 不通过
 
+# 通过 stdin JSON 判断是否为 git commit 命令（非 git commit 直接放行）
+$rawInput = $input | Out-String
+if ($rawInput -notmatch '"command"\s*:\s*"[^"]*git\s+commit\b') {
+    exit 0
+}
+
 $testFile = ".claude/check-results/test-result.json"
 $qualityFile = ".claude/check-results/quality-result.json"
 
