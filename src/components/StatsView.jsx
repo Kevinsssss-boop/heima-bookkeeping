@@ -158,7 +158,7 @@ function StatsView({ expenses, monthlyBudget }) {
                   }
                 >
                   {catPieData.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />}
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip formatter={(v) => `¥${Number(v).toFixed(2)}`} />
